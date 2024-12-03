@@ -1,115 +1,88 @@
 import { useEffect, useState } from "react";
+import { allCharacters } from "../data/data";
 import "./App.css";
 import CharacterDetail from "./components/CharacterDetail";
 import CharacterList from "./components/CharacterList";
-import Navbar, { Favourites, Search, SearchResult } from "./components/Navbar";
-import { Toaster, toast } from "react-hot-toast";
+import Navbar, { Search, Favorite } from "./components/Navbar";
+import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
+import Modal from "./components/Modal";
 
 function App() {
   const [characters, setCharacters] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [query, setQuery] = useState("");
-  const [selectedId, setSelectedId] = useState(null);
-  const [favourites, setFavourites] = useState(
-    () => JSON.parse(localStorage.getItem("FAVOURITES")) || []
-  );
-  const [count, setCount] = useState(0);
-
+  const [character, setCharacter] = useState(2);
+  const [favorites, setFavorites] = useState([]);
+  const controller = new AbortController();
+  const signal = controller.signal;
   useEffect(() => {
-    const controller = new AbortController();
-    const signal = controller.signal;
     async function fetchData() {
       try {
         setIsLoading(true);
         const { data } = await axios.get(
-          `https://rickandmortyapi.com/api/character/?name=${query}`,
+          `https://rickandmortyapi.com/api/character?name=${query}`,
           { signal }
         );
         setCharacters(data.results.slice(0, 5));
-      } catch (err) {
-        // fetch => err.name ==="AbortError"
-        // axios => axios.isCancel()
-        if (!axios.isCancel()) {
-          setCharacters([]);
-          toast.error(err.response.data.error);
-        }
+      } catch (error) {
+        toast.error(error.response.data.error);
       } finally {
         setIsLoading(false);
       }
     }
-
-    // if (query.length < 3) {
-    //   setCharacters([]);
-    //   return;
-    // }
-
     fetchData();
-
     return () => {
       controller.abort();
     };
   }, [query]);
 
-  useEffect(() => {
-    const interval = setInterval(() => setCount((c) => c + 1), 1000);
-
-    // return function(){}
-    return () => {
-      clearInterval(interval);
-    };
-  }, [count]);
-
-  useEffect(() => {
-    localStorage.setItem("FAVOURITES", JSON.stringify(favourites));
-  }, [favourites]);
-
-  // console.log(JSON.parse(localStorage.getItem("FAVOURITES")));
-
   const handleSelectCharacter = (id) => {
-    setSelectedId((prevId) => (prevId === id ? null : id));
+    setCharacter((prevId) => (prevId === id ? null : id));
   };
 
-  const handleAddFavourite = (char) => {
-    setFavourites((preFav) => [...preFav, char]);
+  const favoriteHandler = (char) => {
+    if (favorites.map((fav) => fav.id).includes(character)) {
+      toast.error("your character has already been");
+    } else {
+      setFavorites((prevChar) => [...prevChar, char]);
+      toast.success("your character has been added successfully");
+    }
   };
 
-  const handleDeleteFavourite = (id) => {
-    setFavourites((preFav) => preFav.filter((fav) => fav.id !== id));
-  };
-
-  const isAddToFavourite = favourites.map((fav) => fav.id).includes(selectedId);
-
+  // useEffect(() => {
+  //   setIsLoading(true);
+  //   fetch("https://rickandmortyapi.com/api/characters")
+  //     .then((res) => {
+  //       if (!res.ok) throw new Error("Ridi SolTan:");
+  //       return res.json();
+  //     })
+  //     .then((data) => setCharacters(data.results.slice(0, 5)))
+  //     .catch((err) => {
+  //       toast.error(err.message);
+  //     })
+  //     .finally(setIsLoading(false));
+  // }, []);
+  useEffect(() => {}, [query]);
   return (
     <div className="app">
       <Toaster />
-      <Navbar>
+
+      <Navbar searchResult={characters.length}>
         <Search query={query} setQuery={setQuery} />
-        <SearchResult numOfResult={characters.length} />
-        <Favourites
-          favourites={favourites}
-          onDeleteFavourite={handleDeleteFavourite}
-        />
+        <Favorite favorites={favorites} />
       </Navbar>
-      <Main>
+      <div className="main">
         <CharacterList
-          selectedId={selectedId}
           characters={characters}
           isLoading={isLoading}
           onSelectCharacter={handleSelectCharacter}
+          characterId={character}
         />
-        <CharacterDetail
-          selectedId={selectedId}
-          onAddFavourite={handleAddFavourite}
-          isAddToFavourite={isAddToFavourite}
-        />
-      </Main>
+        <CharacterDetail characterId={character} favHandler={favoriteHandler} />
+      </div>
     </div>
   );
 }
 
 export default App;
-
-function Main({ children }) {
-  return <div className="main">{children}</div>;
-}

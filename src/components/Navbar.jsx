@@ -1,9 +1,8 @@
-import { HeartIcon, TrashIcon } from "@heroicons/react/24/outline";
-import { useState } from "react";
+import { HeartIcon } from "@heroicons/react/24/outline";
 import Modal from "./Modal";
-import { Character } from "./CharacterList";
+import { useState } from "react";
 
-export default function Navbar({ children }) {
+function Navbar({ searchResult, children }) {
   return (
     <nav className="navbar">
       <Logo />
@@ -12,8 +11,10 @@ export default function Navbar({ children }) {
   );
 }
 
+export default Navbar;
+
 function Logo() {
-  return <div className="navbar__logo">LOGO 😍</div>;
+  return <div className="navbar__logo">Rick And morty🚀</div>;
 }
 
 export function Search({ query, setQuery }) {
@@ -28,33 +29,23 @@ export function Search({ query, setQuery }) {
   );
 }
 
-export function SearchResult({ numOfResult }) {
-  return <div className="navbar__result">Found {numOfResult} characters</div>;
-}
-
-export function Favourites({ favourites, onDeleteFavourite }) {
-  const [isOpen, setIsOpen] = useState(false);
-
+export function Favorite({ searchResult, favorites }) {
+  const [open, setOpen] = useState(false);
   return (
-    <>
-      <Modal onOpen={setIsOpen} open={isOpen} title="List of Favourites">
-        {favourites.map((item) => (
-          <Character key={item.id} item={item}>
-            <button
-              className="icon red"
-              onClick={() => onDeleteFavourite(item.id)}
-            >
-              <TrashIcon />
-            </button>
-          </Character>
-        ))}
+    <div>
+      <Modal title="this is title" onOpen={setOpen} open={open}>
+        this modal
       </Modal>
-      <button className="heart" onClick={() => setIsOpen((is) => !is)}>
-        <HeartIcon className="icon" />
-        <span className="badge">{favourites.length}</span>
+      <div className="navbar__result">Found {searchResult} character</div>
+      <button className="heart">
+        <HeartIcon
+          className="icon"
+          onClick={() => {
+            setOpen(!open);
+          }}
+        />
+        <span className="badge">{favorites.length}</span>
       </button>
-    </>
+    </div>
   );
 }
-
-// App => Navbar => SearchResult
