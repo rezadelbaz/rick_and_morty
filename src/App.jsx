@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
-import { allCharacters } from "../data/data";
 import "./App.css";
 import CharacterDetail from "./components/CharacterDetail";
 import CharacterList from "./components/CharacterList";
 import Navbar, { Search, Favorite } from "./components/Navbar";
 import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
-import Modal from "./components/Modal";
 
 function App() {
   const [characters, setCharacters] = useState([]);
@@ -63,14 +61,22 @@ function App() {
   //     })
   //     .finally(setIsLoading(false));
   // }, []);
-  useEffect(() => {}, [query]);
+  // useEffect(() => {}, [query]);
+
+  const handleDeleteFavorite = (id) => {
+    setFavorites((prevFav) => prevFav.filter((fav) => fav.id !== id));
+  };
   return (
     <div className="app">
       <Toaster />
 
       <Navbar searchResult={characters.length}>
         <Search query={query} setQuery={setQuery} />
-        <Favorite favorites={favorites} />
+        <Favorite
+          favorites={favorites}
+          searchResult={characters.length}
+          onDelete={handleDeleteFavorite}
+        />
       </Navbar>
       <div className="main">
         <CharacterList

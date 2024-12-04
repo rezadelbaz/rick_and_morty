@@ -97,6 +97,10 @@ button {
   border-bottom: 1px solid var(--slate-600);
 }
 
+.Modal_text{
+  color: #e11d48;
+}
+
 .icon {
   width: 1.6rem;
   height: 1.6rem;
