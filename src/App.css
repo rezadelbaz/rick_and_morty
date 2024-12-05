@@ -1,6 +1,6 @@
 #root {
   margin: 0 auto;
-  max-width: 1280px;
+  max-width: 1380px;
   position: relative;
   padding: 2rem;
 }
@@ -23,7 +23,11 @@
 .navbar__result {
   color: var(--slate-400);
 }
-
+.nav__search{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 .navbar .heart {
   position: relative;
   color: var(--rose-500);
