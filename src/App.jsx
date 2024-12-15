@@ -5,15 +5,14 @@ import CharacterList from "./components/CharacterList";
 import Navbar, { Search, Favorite } from "./components/Navbar";
 import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
+import useLocalStorage from "./hooks/useLocalStorage";
 
 function App() {
   const [characters, setCharacters] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [query, setQuery] = useState("");
   const [character, setCharacter] = useState(2);
-  const [favorites, setFavorites] = useState(
-    JSON.parse(localStorage.getItem("FAVORITE")) || []
-  );
+  const [favorites, setFavorites] = useLocalStorage("FAVORITE", []);
   const controller = new AbortController();
   const signal = controller.signal;
   useEffect(() => {
@@ -36,10 +35,9 @@ function App() {
       controller.abort();
     };
   }, [query]);
+  // Start add Favorite to local strage//
 
-  useEffect(() => {
-    localStorage.setItem("FAVORITE", JSON.stringify(favorites));
-  }, [favorites]);
+  // End add Favorite to local strage//
   const handleSelectCharacter = (id) => {
     setCharacter((prevId) => (prevId === id ? null : id));
   };

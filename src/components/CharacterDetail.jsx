@@ -1,6 +1,8 @@
 import { ArrowUpCircleIcon } from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { LazyLoadImage } from "react-lazy-load-image-component";
+
 function CharacterDetail({ characterId, favHandler }) {
   const [character, setCharacter] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -44,6 +46,7 @@ export default CharacterDetail;
 const CharachterSubInfo = ({ character, favHandler }) => {
   return (
     <div className="character-detail">
+      {/* <LazyLoadImage/> */}
       <img
         src={character.image}
         alt={character.name}
